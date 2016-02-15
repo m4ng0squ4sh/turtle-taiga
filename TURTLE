@@ -1,0 +1,65 @@
+##
+## Taiga Turtle File
+##
+
+name = "taiga"
+maintainer = "Roland Singer, roland.singer@desertbit.com"
+
+
+
+#
+# Environment
+#
+
+[[env]]
+name		= "POSTGRES_PASSWORD"
+default		= "changeme"
+description	= "Postgres root password"
+required	= true
+containers 	= [ "postgres" ]
+
+[[env]]
+name		= "API_NAME"
+default		= ""
+description	= "API URL for the frontend"
+containers 	= [ "taiga-front" ]
+
+
+
+#
+# Ports
+#
+
+[[port]]
+port 		= 80
+container 	= "taiga-front"
+description	= "Taiga frontend"
+
+[[port]]
+port 		= 8000
+container 	= "taiga-back"
+description	= "Taiga backend"
+
+
+#
+# Containers
+#
+
+[[container]]
+name	= "taiga-front"
+image	= "ipedrazas/taiga-front"
+links 	= [ "taiga-back" ]
+volumes	= [ "/taiga/static", "/taiga/media" ]
+
+[[container]]
+name	= "taiga-back"
+image	= "ipedrazas/taiga-back"
+links 	= [ "postgres" ]
+volumes	= [ "/taiga/static", "/taiga/media" ]
+
+[[container]]
+name	= "postgres"
+image	= "postgres"
+waitAfterStartup = 3000
+env 	= [ "POSTGRES_USER=admin" ]
+volumes	= [ "/var/lib/postgresql/data" ]
